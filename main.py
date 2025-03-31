@@ -1,7 +1,7 @@
 # A price comparison tool
 import tkinter as tk
 
-global price, grams, budget, unit_price, product
+global price, grams, budget, unit_price, product, name
 
 # An empty list that amends as the user enters the different product info
 list_product = []
@@ -37,7 +37,7 @@ def best_budget():
             # print("best", best_product)
             best_product = product
             print("best")
-    product_info = f"Price: {best_product['price']}\nUnit Price: {best_product['unit_price']}"
+    product_info = f"Name: {best_product['name']}, Price: {best_product['price']}"
     tbox_best_budget.config(state='normal')
     tbox_best_budget.delete('1.0', tk.END)
     tbox_best_budget.insert(tk.END, product_info)
@@ -53,7 +53,8 @@ def compare_budget():
         price = product["price"]
         grams = product["grams"]
         unit_price = product["unit_price"]
-    if  price <= budget:
+        name = product["name"]
+    if price <= budget:
         print("This product is within your budget!")
     else:
         print("This product is not within your budget.")
@@ -66,22 +67,26 @@ def add_item():
     print(price)
     grams = float(entry_grams.get())
     unit_price = price / grams
+    name = entry_name.get()
 
     list_product.append({
         "price": price,
         "grams": grams,
-        "unit_price": unit_price
+        "unit_price": unit_price,
+        "name": name,
     })
 
     # Clear the entry boxes so more products can be added
     entry_price.delete(0, tk.END)
     entry_grams.delete(0, tk.END)
+    entry_name.delete(0, tk.END)
 
 # Function for the calculating of all the prices
 def get_prices():
     price = float(entry_price.get())
     grams = float(entry_grams.get())
     unit_price = price / grams
+    name = entry_name.get()
 
     tbox_unit_price.config(state="normal")
 
@@ -106,11 +111,13 @@ title_heading = tk.Label(window, text="Price Comparison", font=("Arial", 13, "bo
 title_budget = tk.Label(window, text="Budget", font=("Arial", 10, "bold"), fg="black", bg="white")
 title_price = tk.Label(window, text="Price", font=("Arial", 10, "bold"), fg="black", bg="white")
 title_grams = tk.Label(window, text="Grams", font=("Arial", 10, "bold"), fg="black", bg="white")
+title_name = tk.Label(window, text="Name of Product", font=("Arial", 10, "bold"), fg="black", bg="white")
 
 # A entry box for the budget, wholesale price, and grams
 entry_budget = tk.Entry(window, width=10)
 entry_price = tk.Entry(window, width=10)
 entry_grams = tk.Entry(window, width=10)
+entry_name = tk.Entry(window, width=20)
 
 # Button to calculate the different prices
 btn_calculate_prices = tk.Button(window, text="Calculate Unit Costs", font=("Arial", 13), command=get_prices)
@@ -144,5 +151,7 @@ btn_add_product.place(x=180, y=300)
 btn_compare_budget.place(x=180, y=340)
 tbox_best_budget.place(x=20, y=340)
 btn_best_budget.place(x=50, y=300)
+entry_name.place(x=180, y=40)
+title_name.place(x=50, y=40)
 
 tk.mainloop()
