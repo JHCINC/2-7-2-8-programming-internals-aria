@@ -1,7 +1,7 @@
 # A price comparison tool
 import tkinter as tk
 
-global price, grams, budget, unit_price, product, name
+global price, grams, budget, unit_price, product, name, results
 
 # An empty list that amends as the user enters the different product info
 list_product = []
@@ -19,7 +19,6 @@ def best_budget():
     for product in list_product:
         if product["price"] <= budget:
             affordable_products.append(product)
-            # print("aff",affordable_products)
     if not affordable_products:
         tbox_best_budget.config(state='normal')  # Make sure it's editable
         tbox_best_budget.delete('1.0', tk.END)
@@ -36,7 +35,6 @@ def best_budget():
         if product["unit_price"] <= best_product["unit_price"]:
             # print("best", best_product)
             best_product = product
-            print("best")
     product_info = f"Name: {best_product['name']}, Price: {best_product['price']}"
     tbox_best_budget.config(state='normal')
     tbox_best_budget.delete('1.0', tk.END)
@@ -48,23 +46,30 @@ def best_budget():
 # Function that compares to the budget
 def compare_budget():
     budget = float(entry_budget.get())
+    tbox_compare_budget.config(state='normal')
+    tbox_compare_budget.delete('1.0', tk.END)
+
+    results = ""
+
     for product in list_product:
         print("product", product)
         price = product["price"]
         grams = product["grams"]
         unit_price = product["unit_price"]
         name = product["name"]
-    if price <= budget:
-        print("This product is within your budget!")
-    else:
-        print("This product is not within your budget.")
+        if price <= budget:
+            results += f"{name}: This product is in your budget!\n"
+        else:
+            results += f"{name}: This product is not in your budget.\n"
+        print(f"Results: {results}")
+    tbox_compare_budget.insert(tk.END, results)
+    tbox_compare_budget.config(state='disabled')
 
 
 # Function that adds items to the list
 def add_item():
     # Get the entry info
     price = float(entry_price.get())
-    print(price)
     grams = float(entry_grams.get())
     unit_price = price / grams
     name = entry_name.get()
@@ -98,7 +103,7 @@ def get_prices():
 
 # A window for the GUI
 window = tk.Tk()
-window.geometry("500x400")
+window.geometry("600x500")
 window.config(bg="white")
 # So that the window stays the size I put it.
 window.resizable(width=False, height=False)
@@ -128,6 +133,11 @@ tbox_unit_price = tk.Text(window, width=5, height=0, state="disabled")
 # Text box for the best  price for budget
 tbox_best_budget = tk.Text(window, width=23, height=0, state="disabled")
 
+# Text box for if it fits the budget
+tbox_compare_budget = tk.Text(window, width=25, height=5, state="disabled")
+
+
+
 # A button that adds a product to the list
 btn_add_product = tk.Button(window, text="Add product", font=("Arial", 13), command=add_item)
 
@@ -138,7 +148,7 @@ btn_compare_budget = tk.Button(window, text="See which products fit your budget.
 btn_best_budget = tk.Button(window, text="Best for budget.", font=("Arial", 13,), command=best_budget)
 
 # Placing elements on screen
-title_heading.place(x=180, y=10)
+title_heading.place(x=210, y=10)
 entry_budget.place(x=180, y=80)
 title_budget.place(x=180, y=60)
 entry_price.place(x=180, y=120)
@@ -146,12 +156,13 @@ title_price.place(x=180, y=100)
 entry_grams.place(x=180, y=170)
 title_grams.place(x=180, y=140)
 btn_calculate_prices.place(x=160, y=200)
-tbox_unit_price.place(x=180, y=230)
-btn_add_product.place(x=180, y=300)
-btn_compare_budget.place(x=180, y=340)
+tbox_unit_price.place(x=180, y=240)
+btn_add_product.place(x=200, y=300)
+btn_compare_budget.place(x=180, y=400)
 tbox_best_budget.place(x=20, y=340)
 btn_best_budget.place(x=50, y=300)
 entry_name.place(x=180, y=40)
 title_name.place(x=50, y=40)
+tbox_compare_budget.place(x=280, y=90)
 
 tk.mainloop()
