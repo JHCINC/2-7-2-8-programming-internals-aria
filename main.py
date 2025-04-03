@@ -1,11 +1,13 @@
 # A price comparison tool
 import tkinter as tk
 
-global price, grams, budget, unit_price, product, name, results
+global price, grams, budget, unit_price, product, name, results, status_label
 
 # An empty list that amends as the user enters the different product info
 list_product = []
 # affordable_products = []
+
+status_label = tk.Label(text="", fg="green")
 
 # Function that compares the items in the list
 def get_unit_price(product):
@@ -68,23 +70,34 @@ def compare_budget():
 
 # Function that adds items to the list
 def add_item():
-    # Get the entry info
-    price = float(entry_price.get())
-    grams = float(entry_grams.get())
-    unit_price = price / grams
-    name = entry_name.get()
+    # Check if there are empty boxes
+    if not entry_price.get() or not entry_grams.get() or not entry_name.get():
+        status_label = tk.Label(text="", fg="green")
+        status_label.grid(row=4, column=0, columnspan=2, pady=10)
+        status_label.config(text=f'Please fill in all the entry boxes!')
+        return
 
-    list_product.append({
-        "price": price,
-        "grams": grams,
-        "unit_price": unit_price,
-        "name": name,
-    })
+    # Get the entry info
+    try:
+        price = float(entry_price.get())
+        grams = float(entry_grams.get())
+        unit_price = price / grams
+        name = entry_name.get()
+        list_product.append({
+            "price": price,
+            "grams": grams,
+            "unit_price": unit_price,
+            "name": name,
+        })
+        status_label.config(text=f'Product added to list!')
 
     # Clear the entry boxes so more products can be added
     entry_price.delete(0, tk.END)
     entry_grams.delete(0, tk.END)
     entry_name.delete(0, tk.END)
+    except ValueError:
+        status_label.config(text=f'Please enter numbers!')
+
 
 # Function for the calculating of all the prices
 def get_prices():
@@ -136,6 +149,8 @@ tbox_best_budget = tk.Text(window, width=23, height=0, state="disabled")
 # Text box for if it fits the budget
 tbox_compare_budget = tk.Text(window, width=25, height=5, state="disabled")
 
+# Exit button
+btn_exit = tk.Button(window, text="Exit application", font=("Arial", 13), command=exit)
 
 
 # A button that adds a product to the list
@@ -164,5 +179,7 @@ btn_best_budget.place(x=50, y=300)
 entry_name.place(x=180, y=40)
 title_name.place(x=50, y=40)
 tbox_compare_budget.place(x=280, y=90)
+btn_exit.place(x=180, y=450)
+status_label.place(x=180, y=270)
 
 tk.mainloop()
