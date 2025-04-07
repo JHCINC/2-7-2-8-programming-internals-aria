@@ -1,9 +1,10 @@
 # A price comparison tool
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 
 
-global price, grams, budget, unit_price, product, name, results
+global price, grams, budget, unit_price, product, name, results, unit
 
 # An empty list that amends as the user enters the different product info
 list_product = []
@@ -73,7 +74,7 @@ def compare_budget():
 def add_item():
     # Check if there are empty boxes
     if not entry_price.get() or not entry_grams.get() or not entry_name.get():
-        messagebox.show_info("Error", "Please enter values into all of the entry boxes!")
+        messagebox.showinfo("Error", "Please enter values into all of the entry boxes!")
         return
 
     # Get the entry info
@@ -103,21 +104,29 @@ def add_item():
 def get_prices():
     try:
         price = float(entry_price.get())
-        grams = float(entry_grams.get())
-        if grams <= 0 or price <= 0:
+        amount = float(entry_grams.get())
+        unit = dropdown_unit.get()
+        if amount <= 0 or price <= 0:
             messagebox.showerror("Error", "Please enter a number above 0!")
-        elif grams > 3000 or price > 3000:
+        elif amount > 3000 or price > 3000:
             messagebox.showerror("Error", "Sorry, we cannot calculate numbers above 3000!")
             return
 
-        unit_price = price / grams
+        unit_price = price / amount
         name = entry_name.get()
+
+        unit_symbol = ""
+        if unit == "Grams":
+            unit_symbol = 'g'
+        else:
+            unit_symbol = 'L'
+
 
         tbox_unit_price.config(state="normal")
 
     # Insert the text into the text box
         tbox_unit_price.delete('1.0', tk.END)
-        tbox_unit_price.insert(tk.END, unit_price)
+        tbox_unit_price.insert('1.0', str(unit_price) + unit_symbol)
         tbox_unit_price.config(state='disabled')
     except ValueError:
         messagebox.showerror("Error", "Please enter NUMBERS!")
@@ -136,9 +145,9 @@ window.title("Price Comparison")
 # A label for the title of the program
 title_heading = tk.Label(window, text="Price Comparison", font=("Arial", 13, "bold"), fg="black", bg="white")
 # A label for the budget, wholesale price, and grams entry boxes
-title_budget = tk.Label(window, text="Budget", font=("Arial", 10, "bold"), fg="black", bg="white")
-title_price = tk.Label(window, text="Price", font=("Arial", 10, "bold"), fg="black", bg="white")
-title_grams = tk.Label(window, text="Grams", font=("Arial", 10, "bold"), fg="black", bg="white")
+title_budget = tk.Label(window, text="Budget ($)", font=("Arial", 10, "bold"), fg="black", bg="white")
+title_price = tk.Label(window, text="Price ($)", font=("Arial", 10, "bold"), fg="black", bg="white")
+title_amount = tk.Label(window, text="Amount", font=("Arial", 10, "bold"), fg="black", bg="white")
 title_name = tk.Label(window, text="Name of Product", font=("Arial", 10, "bold"), fg="black", bg="white")
 
 # A entry box for the budget, wholesale price, and grams
@@ -149,6 +158,11 @@ entry_name = tk.Entry(window, width=20)
 
 # Button to calculate the different prices
 btn_calculate_prices = tk.Button(window, text="Calculate Unit Costs", font=("Arial", 13), command=get_prices)
+
+# Drop down box
+unit_options = ["Grams", "Liters"]
+dropdown_unit = ttk.Combobox(window, values=unit_options, width=8, state="readonly")
+dropdown_unit.current(0)
 
 # Text box that displays the unit costs
 tbox_unit_price = tk.Text(window, width=5, height=0, state="disabled")
@@ -161,6 +175,10 @@ tbox_compare_budget = tk.Text(window, width=25, height=5, state="disabled")
 
 # Exit button
 btn_exit = tk.Button(window, text="Exit application", font=("Arial", 13), command=exit, fg='red')
+
+# Unit label
+title_unit = tk.Label(window, text="Choose unit", font=("Arial", 10, "bold"), fg="black", bg="white")
+
 
 
 # A button that adds a product to the list
@@ -175,12 +193,12 @@ btn_best_budget = tk.Button(window, text="Best for budget.", font=("Arial", 13,)
 # Placing elements on screen
 title_heading.place(x=210, y=10)
 entry_budget.place(x=180, y=80)
-title_budget.place(x=180, y=60)
+title_budget.place(x=60, y=80)
 entry_price.place(x=180, y=120)
-title_price.place(x=180, y=100)
+title_price.place(x=60, y=120)
 entry_grams.place(x=180, y=170)
-title_grams.place(x=180, y=140)
-btn_calculate_prices.place(x=160, y=200)
+dropdown_unit.place(x=250, y=170)
+btn_calculate_prices.place(x=160, y=250)
 tbox_unit_price.place(x=180, y=240)
 btn_add_product.place(x=200, y=300)
 btn_compare_budget.place(x=180, y=400)
@@ -190,5 +208,6 @@ entry_name.place(x=180, y=40)
 title_name.place(x=50, y=40)
 tbox_compare_budget.place(x=280, y=90)
 btn_exit.place(x=180, y=450)
+title_unit.place(x=60, y=170)
 
 tk.mainloop()
