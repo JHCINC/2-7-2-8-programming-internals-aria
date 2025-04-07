@@ -1,13 +1,14 @@
 # A price comparison tool
 import tkinter as tk
+from tkinter import messagebox
 
-global price, grams, budget, unit_price, product, name, results, status_label
+
+global price, grams, budget, unit_price, product, name, results
 
 # An empty list that amends as the user enters the different product info
 list_product = []
 # affordable_products = []
 
-status_label = tk.Label(text="", fg="green")
 
 # Function that compares the items in the list
 def get_unit_price(product):
@@ -72,9 +73,7 @@ def compare_budget():
 def add_item():
     # Check if there are empty boxes
     if not entry_price.get() or not entry_grams.get() or not entry_name.get():
-        status_label = tk.Label(text="", fg="green")
-        status_label.grid(row=4, column=0, columnspan=2, pady=10)
-        status_label.config(text=f'Please fill in all the entry boxes!')
+        messagebox.show_info("Error", "Please enter values into all of the entry boxes!")
         return
 
     # Get the entry info
@@ -89,35 +88,46 @@ def add_item():
             "unit_price": unit_price,
             "name": name,
         })
-        status_label.config(text=f'Product added to list!')
+    except ValueError:
+        messagebox.show_info("Error", "Please enter NUMBERS into the price and grams boxes!")
+
+
 
     # Clear the entry boxes so more products can be added
     entry_price.delete(0, tk.END)
     entry_grams.delete(0, tk.END)
     entry_name.delete(0, tk.END)
-    except ValueError:
-        status_label.config(text=f'Please enter numbers!')
 
 
 # Function for the calculating of all the prices
 def get_prices():
-    price = float(entry_price.get())
-    grams = float(entry_grams.get())
-    unit_price = price / grams
-    name = entry_name.get()
+    try:
+        price = float(entry_price.get())
+        grams = float(entry_grams.get())
+        if grams <= 0 or price <= 0:
+            messagebox.showerror("Error", "Please enter a number above 0!")
+        elif grams > 3000 or price > 3000:
+            messagebox.showerror("Error", "Sorry, we cannot calculate numbers above 3000!")
+            return
 
-    tbox_unit_price.config(state="normal")
+        unit_price = price / grams
+        name = entry_name.get()
+
+        tbox_unit_price.config(state="normal")
 
     # Insert the text into the text box
-    tbox_unit_price.delete('1.0', tk.END)
-    tbox_unit_price.insert(tk.END, unit_price)
-    tbox_unit_price.config(state='disabled')
+        tbox_unit_price.delete('1.0', tk.END)
+        tbox_unit_price.insert(tk.END, unit_price)
+        tbox_unit_price.config(state='disabled')
+    except ValueError:
+        messagebox.showerror("Error", "Please enter NUMBERS!")
+
 
 
 # A window for the GUI
 window = tk.Tk()
 window.geometry("600x500")
-window.config(bg="white")
+window.config(bg="#d8e2dc")
 # So that the window stays the size I put it.
 window.resizable(width=False, height=False)
 window.title("Price Comparison")
@@ -144,13 +154,13 @@ btn_calculate_prices = tk.Button(window, text="Calculate Unit Costs", font=("Ari
 tbox_unit_price = tk.Text(window, width=5, height=0, state="disabled")
 
 # Text box for the best  price for budget
-tbox_best_budget = tk.Text(window, width=23, height=0, state="disabled")
+tbox_best_budget = tk.Text(window, width=23, height=0, state="disabled", bg='#a9def9')
 
 # Text box for if it fits the budget
 tbox_compare_budget = tk.Text(window, width=25, height=5, state="disabled")
 
 # Exit button
-btn_exit = tk.Button(window, text="Exit application", font=("Arial", 13), command=exit)
+btn_exit = tk.Button(window, text="Exit application", font=("Arial", 13), command=exit, fg='red')
 
 
 # A button that adds a product to the list
@@ -180,6 +190,5 @@ entry_name.place(x=180, y=40)
 title_name.place(x=50, y=40)
 tbox_compare_budget.place(x=280, y=90)
 btn_exit.place(x=180, y=450)
-status_label.place(x=180, y=270)
 
 tk.mainloop()
